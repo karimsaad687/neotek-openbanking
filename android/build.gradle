@@ -56,6 +56,12 @@ android {
 
   sourceSets {
     main {
+      assets.srcDirs += ['../src/assets/fonts']
+    }
+  }
+
+  sourceSets {
+    main {
       java.srcDirs += [
         "generated/java",
         "generated/jni"

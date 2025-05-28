@@ -1,0 +1,60 @@
+{
+    "home":{
+        "selectAccount":"Select account",
+        "selectAccountDesc":"If support your account provide, we will transfer you securely, to your banking app to authenticate this connection"
+    },
+    "details":{
+        "connectYourAccount":"Connect your account",
+        "connectYourAccountDesc":"To use this service, Emkan will collect the required data from your bank through neotek services.",
+        "whyWeNeedToShareYourData":"Why we need to share your data?",
+        "whatYouWillGetInReturn":"What you will get in return?",
+
+        "yourAccountDetails":"Your account details",
+        "yourAccountNameAndNumber":"Your account name and number",
+        "yourAccountBalance": "Your account balance",
+
+        "yourRegularPayments":"Your regular payments",
+        "yourIncomingTransactions":"Your incoming transactions",
+        "detailsYourIncomingTransactions":"Details your incoming transactions",
+        "yourOutgoingTransactions":"Your outgoing transactions",
+        "detailsYourOutgoingTransactions":"Details your outgoing transactions",
+
+        "yourAccountTransactions":"Your account transactions",
+        "directDebit": "Direct debit", 
+        "standingOrders": "Standing orders", 
+        "scheduledPayments": "Scheduled payments",
+
+        "contactAndParty":"Contact and party details",
+        "contactAndPartyDetails":"The name of the account and the full legal name(s) of all parties. Optionally this can also include their address or addresses, telephone.The name of the account, address, date of birth, national ID and residency number.The name of the account and your full legal name. Optionally this can also include your address, telephone number and email.",
+
+        "sharingDataFrom":"Sharing data from",
+        "connectionExpires":"Connection Expires",
+        "continueWithYourBank":"Continue with your bank",
+
+        "confirmYourRedirection":"Confirm your redirection",
+        "confirmYourRedirectionDesc":"By clicking allow, you will be redirected to your bank to complete your service request.",
+        "allowRedirection":"Allow Redirection",
+
+       
+        "whatYouWillGetInReturnDesc":"By sharing your data we can provide you with consolidated view of your accounts from different banks in one place. This will simplifies your ability ti track balances, monitor transactions, and manage cash flow efficiently.",
+        "whhyWeNeedToShareYourDataDesc":"Sharing your bank data helps us to analyze the expenses and revenues of your account to reach a comprehensive view of your financial situation, so we ask you to share bank account data through open banking securely under the standards of the Central Bank of Saudi Arabia."
+    },
+    "redirection":{
+        "transferringYouTo":"Transferring you to",
+        "weAreSecurelyTransferringYouTo":"We are securely transferring you to"
+    },
+    "success":{
+        "weHaveReceivedTheRequestInformation":"We have received the request information",
+        "fromYourSelectedAccounts":"from your selected accounts"
+    },
+    "fail":{
+        "somethingWentWrong":"Something went wrong",
+        "itSeemsThatTheSystemDoesNotTrustOr":"It seems that the system does not trust or",
+        "theActionIsUnauthorized":"the action is unauthorized"
+    },
+    "thankYou":"Thank you",
+    "cancel":"Cancel",
+    "close":"Close",
+    "gotIt":"Got it",
+    "done":"Done"
+}
