@@ -21,7 +21,7 @@ const ConsentPolicy = (prop: Props) => {
             onPress={()=>{setSelected(!selected)}}>
                 <Image source={prop.image} style={{ width: 24, height: 24, alignSelf: 'center', marginStart: 16 }} />
                 <BoldText text={prop.text} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
-                <Image source={Images.ic_down_arrow} style={{ transform: [{ rotate: selected ? '180deg' : '0deg'}] ,width: 20, height: 20, alignSelf: 'center', position: 'absolute', end: 16 }} />
+                <Image source={Images.ic_down_arrow} style={{ transform: [{ rotate: selected ? '0deg' : '180deg'}] ,width: 20, height: 20, alignSelf: 'center', position: 'absolute', end: 16 }} />
             </TouchableOpacity>
            {selected && <View style={{ width: '90%', height: 1, alignSelf: 'center', backgroundColor: '#E6E9EF', marginVertical: 8 }} />}
             {selected && <FlatList

@@ -14,6 +14,7 @@ export const Images:any = {
     ic_popupbar: require('./images/ic_popupbar.png'),
     ic_success: require('./images/ic_success.png'),
     ic_fail: require('./images/ic_fail.png'),
+    ic_card: require('./images/ic_card.png'),
   };
 
 

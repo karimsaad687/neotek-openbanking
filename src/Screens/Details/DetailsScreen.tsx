@@ -1,4 +1,4 @@
-import { View, ScrollView, Image, StyleSheet, Modal } from "react-native"
+import { View, ScrollView, Image, StyleSheet, Modal,SafeAreaView } from "react-native"
 import { ThemeContext } from "../../common/ThemeContext";
 import { Images } from '../../assets';
 import { useContext, useEffect } from 'react';
@@ -9,27 +9,36 @@ import PrimaryButton from "../../components/PrimaryButton";
 import TitleDetails from "../../components/TitleDetails";
 import ConsentPolicy from "../../components/ConsentPolicy";
 import SecondaryButton from "../../components/SecondaryButton";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
-import {
-    NativeEventEmitter,
-} from 'react-native'
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
+import moment from "moment";
 const DetailsScreen = () => {
     const { themeMain } = useContext(ThemeContext);
     const navigation = useNavigation();
+    const route = useRoute()
     const [visible, setVisible] = useState(false);
     const [visibleWhyShare, setVisibleWhyShare] = useState(false);
     const [visibleWillGet, setVisibleWillGet] = useState(false);
+    const [todayDate, setTodayDate] = useState(Date());
     const { t } = useTranslation();
-    const eventEmitter = new NativeEventEmitter();
+    const account = route.params.account
+    const MyNativeModule = NativeModules.NeotekOpenbanking;
+      let eventEmitter = null;
+      if (Platform.OS === 'ios' && MyNativeModule) {
+        eventEmitter = new NativeEventEmitter(MyNativeModule);
+      } else {
+        eventEmitter = new NativeEventEmitter()
+      }
     const isFocus = useIsFocused();
     useEffect(() => {
         if (isFocus) {
             eventEmitter.emit('step', 1)
+            eventEmitter.emit('title', t("details.connectYourAccount"))
         }
     }, [isFocus])
     return (
-        <View style={{ backgroundColor: themeMain.white, flex: 1 }}>
+        <SafeAreaView style={{ backgroundColor: themeMain.white, flex: 1 }}>
             <ScrollView style={{ flex: 1, }}>
 
                 <View style={styles.imagesContainer}>
@@ -39,7 +48,7 @@ const DetailsScreen = () => {
                     </View>
                     <Image source={Images.ic_neotek} style={{ width: 50, height: 50, marginHorizontal: 32, alignSelf: 'center' }} />
                     <View style={styles.imagesFrame} >
-                        <Image source={Images.ic_emkan_logo} style={{ width: 47, height: 14, alignSelf: 'center' }} />
+                        <Image source={{uri:account?.FinancialInstitution.Logo}} style={{ width: 47, height: 47, alignSelf: 'center' }} />
                     </View>
                 </View>
                 <BoldText text={t('details.connectYourAccount')} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
@@ -58,10 +67,10 @@ const DetailsScreen = () => {
 
                 <View style={styles.divider} />
 
-                <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
+                <View style={{ width: '90%', alignSelf: 'center',marginTop: 24, justifyContent: 'space-between', flexDirection: 'row' }}>
                     <View style={{ justifyContent: 'flex-start' }}>
                         <RegularText text={t('details.sharingDataFrom')} style={{ fontSize: 15 }} />
-                        <BoldText text="2022-10-19" style={{ fontSize: 17 }} />
+                        <BoldText text={moment(todayDate).format('yyyy-MM-DD')} style={{ fontSize: 17 }} />
                     </View>
                     <View style={{ width: 1, height: 40, backgroundColor: '#E6E9EF' }} />
                     <View style={{ justifyContent: 'flex-end' }}>
@@ -86,7 +95,7 @@ const DetailsScreen = () => {
                         <BoldText text={t('details.confirmYourRedirection')} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
                         <RegularText text={t('details.confirmYourRedirectionDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
 
-                        <PrimaryButton text={t('details.allowRedirection')} style={styles.modalPrimary} onPress={() => { setVisible(false); navigation.navigate('Redirection') }} />
+                        <PrimaryButton text={t('details.allowRedirection')} style={styles.modalPrimary} onPress={() => { setVisible(false); navigation.navigate('Redirection',{'account':route.params.account}) }} />
                         <SecondaryButton text={t('cancel')} style={styles.modalSecondary} onPress={() => { setVisible(false) }} />
                     </View>
                 </View>
@@ -127,7 +136,7 @@ const DetailsScreen = () => {
                 </View>
             </Modal>
 
-        </View>
+        </SafeAreaView>
     )
 }
 

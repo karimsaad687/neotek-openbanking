@@ -1,4 +1,4 @@
-const NeotekTheme = {
+const NeotekTheme1 = {
   themeMain: {
     primaryColor: '#0CBAB7',
     primaryButtonTextColor: '#ffffff',

@@ -8,7 +8,7 @@ import PrimaryButton from "../../components/PrimaryButton";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
-const SuccessScreen = () => {
+const DisconnectedSuccessScreen = () => {
     const { themeMain } = useContext(ThemeContext);
     const { t } = useTranslation();
     const navigation = useNavigation();
@@ -23,40 +23,40 @@ const SuccessScreen = () => {
     useEffect(() => {
         if (isFocus) {
             eventEmitter.emit('step', 3)
-            eventEmitter.emit('title', t("success.title"))
+            eventEmitter.emit('revokeTitle', "")
         }
     }, [isFocus])
 
-    useEffect(() => {
-      const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-        // Prevent default behavior of leaving the screen
-        e.preventDefault();
+    // useEffect(() => {
+    //   const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+    //     // Prevent default behavior of leaving the screen
+    //     e.preventDefault();
   
-        // Optionally show a confirmation dialog
-        // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-        //   { text: 'Cancel', style: 'cancel', onPress: () => {} },
-        //   { text: 'Yes', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
-        // ]);
-      });
+    //     // Optionally show a confirmation dialog
+    //     // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+    //     //   { text: 'Cancel', style: 'cancel', onPress: () => {} },
+    //     //   { text: 'Yes', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
+    //     // ]);
+    //   });
   
-      return unsubscribe;
-    }, [navigation]);
-
+    //   return unsubscribe;
+    // }, [navigation]);
     return (
         <View style={{ flex: 1 ,backgroundColor:themeMain.white,alignItems:'center'}}>
             <Image source={Images.ic_success} style={{ width: 199, height: 199,marginTop:32 }} />
-            <BoldText text={t('thankYou')} style={{ fontSize: 21, marginTop: 16 }} />
-            
-            <RegularText text={`${t('success.weHaveReceivedTheRequestInformation')}\n${t('success.fromYourSelectedAccounts')}`} style={{ fontSize: 13, marginTop: 4,textAlign:'center' }} />
+            <BoldText text={t('disconnected.disconnectedSuccessfully')} style={{ fontSize: 21, marginTop: 16 }} />
+            <RegularText text={`${t('disconnected.disconnectedLine1')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
+            <RegularText text={`${t('disconnected.disconnectedLine2')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
+            <RegularText text={`${t('disconnected.disconnectedLine3')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'75%' }} />
 
-            <PrimaryButton text={t('done')} style={styles.button} onPress={() => {  }} />
+            <PrimaryButton text={t('disconnected.backToConnectedAccounts')} style={styles.button} onPress={() => { navigation.goBack(); navigation.goBack(); }} />
 
             
         </View>
     )
 }
 
-export default SuccessScreen
+export default DisconnectedSuccessScreen
 const styles = StyleSheet.create({
     button: { width: '90%', height: 50, marginHorizontal: 24, marginTop: 16, alignSelf: 'center', bottom: 70, position: 'absolute' }
 })
