@@ -9,18 +9,23 @@ import PrimaryButton from "../../components/PrimaryButton";
 import TitleDetails from "../../components/TitleDetails";
 import ConsentPolicy from "../../components/ConsentPolicy";
 import SecondaryButton from "../../components/SecondaryButton";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
 import SemiBoldText from "../../components/SemiBoldText";
 import RejectButton from "../../components/RejectButton";
+import RNSecureStorage, { ACCESSIBLE } from "rn-secure-storage";
+import { getAllAccounts, getAllCurrentAccounts, getToken, revoke } from "../../common/apis";
 const ManageAccountScreen = () => {
-    const { themeMain } = useContext(ThemeContext);
+    const { themeMain,credentials } = useContext(ThemeContext);
     const navigation = useNavigation();
+    const [currentAccounts, setCurrentAccounts] = useState([])
+    const [historyAccounts, setHistoryAccounts] = useState([])
     const [visible, setVisible] = useState(false);
     const [visibleYourData, setVisibleYourData] = useState(false);
 
     const { t } = useTranslation();
+    const route = useRoute();
     const MyNativeModule = NativeModules.NeotekOpenbanking;
     let eventEmitter = null;
     if (Platform.OS === 'ios' && MyNativeModule) {
@@ -34,6 +39,25 @@ const ManageAccountScreen = () => {
             eventEmitter.emit('revokeTitle', t('manageAccount.title'))
         }
     }, [isFocus])
+
+
+    const apiCall=async()=>{
+        await RNSecureStorage.setItem("client_id", credentials.client_id, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+        await RNSecureStorage.setItem("client_secret", credentials.client_secret, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+        await RNSecureStorage.setItem("apiKey", credentials.apiKey, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+        await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+        await RNSecureStorage.setItem("psuid", '255cc', {accessible: ACCESSIBLE.WHEN_UNLOCKED})
+        await getToken().then()
+        console.log("hello")
+        await revoke(route.params.account.AccountsLinkId).then((res) => {
+            console.log("res1",res)
+            navigation.navigate('DisconnectedSuccess') 
+        }).catch((err) => {
+            console.log(err)
+        })
+       
+    }
+
     return (
         <View style={{ backgroundColor: themeMain.white, flex: 1 }}>
             <ScrollView style={{ flex: 1, }}>
@@ -144,7 +168,7 @@ const ManageAccountScreen = () => {
                             <BoldText text={t('connectAccounts.clickHereForOur')} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
                             <TouchableOpacity><BoldText text={t('connectAccounts.termsOfService')} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8,color: themeMain.primaryColor }} /></TouchableOpacity>
                         </View>
-                        <RejectButton text={t('confirm')} style={styles.modalPrimary} onPress={() => { setVisible(false); navigation.navigate('DisconnectedSuccess') }} />
+                        <RejectButton text={t('confirm')} style={styles.modalPrimary} onPress={() => { setVisible(false); apiCall()}} />
                         <SecondaryButton text={t('cancel')} style={styles.modalSecondary} onPress={() => { setVisible(false) }} />
                     </ScrollView>
                 </View>

@@ -45,7 +45,7 @@ export default function App() {
   return (
     <SafeAreaView style={[styles.container, { marginTop: 30 }]}>
       <StatusBar barStyle={'dark-content'} />
-      <NeoTek theme={NeotekTheme} screen='Home'/>
+      <NeoTek theme={NeotekTheme} screen='Home8'/>
     </SafeAreaView>
   );
 }

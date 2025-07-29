@@ -10,11 +10,14 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import SemiBoldText from "../../components/SemiBoldText";
+import RNSecureStorage, { ACCESSIBLE } from "rn-secure-storage";
+import { getAllCurrentAccounts, getAllHistoryAccounts, getToken } from "../../common/apis";
 const ConnectedAccountsScreen = () => {
-    const { themeMain } = useContext(ThemeContext);
+    const { themeMain, credentials } = useContext(ThemeContext);
     const [selectedIndex, setSelectedIndex] = useState(1)
     const navigation = useNavigation();
-
+    const [currentAccounts, setCurrentAccounts] = useState([])
+    const [historyAccounts, setHistoryAccounts] = useState([])
     const MyNativeModule = NativeModules.NeotekOpenbanking;
     let eventEmitter = null;
     if (Platform.OS === 'ios' && MyNativeModule) {
@@ -35,6 +38,7 @@ const ConnectedAccountsScreen = () => {
         if (isFocus) {
             eventEmitter.emit('revoke', true)
             eventEmitter.emit('revokeTitle', t('connectAccounts.title'))
+            currentAccountsCall()
         }
     }, [isFocus])
     const current: Accounts[] = [{
@@ -81,37 +85,86 @@ const ConnectedAccountsScreen = () => {
             Accounts: ["Saving Account", "Current Account", "Credit Card Account", "Prepaid Card Account"]
         },
     ]
+
+
+    const currentAccountsCall = async () => {
+        if (currentAccounts.length == 0) {
+            await RNSecureStorage.setItem("client_id", credentials.client_id, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("client_secret", credentials.client_secret, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            getToken().then((res) => {
+                console.log("res1", res)
+
+                getAllCurrentAccounts(1).then((res) => {
+                    console.log("res1", res)
+                    setCurrentAccounts(res.Data.AccountsLinks)
+                }).catch((err) => {
+                    console.log(err)
+                })
+            })
+        }
+    }
+
+    const historyAccountsCall = async () => {
+        console.log("length", historyAccounts.length)
+        if (historyAccounts.length == 0) {
+            await RNSecureStorage.setItem("client_id", credentials.client_id, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("client_secret", credentials.client_secret, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+            getToken().then((res) => {
+                console.log("res1", res)
+
+                getAllHistoryAccounts(1).then((res) => {
+                    console.log("res1", res)
+                    setHistoryAccounts(res.Data.AccountsLinks)
+                }).catch((err) => {
+                    console.log(err)
+                })
+            })
+        }
+    }
+
     return (
         <View style={{ backgroundColor: themeMain.white, flex: 1, }}>
 
             <View style={[styles.currentHistoryContainer, { backgroundColor: themeMain.gray }]} >
-                <TouchableOpacity style={[styles.current, { backgroundColor: selectedIndex == 1 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(1) }}>
+                <TouchableOpacity style={[styles.current, { backgroundColor: selectedIndex == 1 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(1); currentAccountsCall() }}>
                     <SemiBoldText text={t("connectAccounts.current")} style={{ color: selectedIndex == 1 ? themeMain.white : themeMain.textSecondaryColor, alignSelf: 'center' }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.history, { backgroundColor: selectedIndex == 2 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(2) }}>
+                <TouchableOpacity style={[styles.history, { backgroundColor: selectedIndex == 2 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(2), historyAccountsCall() }}>
                     <SemiBoldText text={t("connectAccounts.history")} style={{ color: selectedIndex == 2 ? themeMain.white : themeMain.textSecondaryColor, alignSelf: 'center' }} />
                 </TouchableOpacity>
             </View>
             <FlatList
                 style={{ marginTop: 16, marginHorizontal: 24, marginBottom: 130 }}
-                data={selectedIndex == 1 ? current : history}
+                data={selectedIndex == 1 ? currentAccounts : historyAccounts}
                 showsVerticalScrollIndicator={false}
+                ListEmptyComponent={
+                    <View style={{ flex: 1,justifyContent: 'center', alignItems: 'center',flexDirection: 'column',marginTop: 100 }}>
+                        <Image source={Images.ic_fail} style={{ width: 100, height: 100 }} />
+                        <BoldText text={t("connectAccounts.no_accounts")} style={{ color: themeMain.textSecondaryColor }} />
+                    </View>
+                }
                 renderItem={({ item, index }) => {
                     const items = [];
-                    for (let i = 0; i < item.Accounts.length; i++) {
+                    if(item.Accounts){for (let i = 0; i < item.Accounts.length; i++) {
                         items.push(<View style={{ paddingVertical: 8, flexDirection: 'row' }}>
                             <Image source={Images.ic_dot} style={{ width: 24, height: 24, alignSelf: 'flex-start' }} />
                             <SemiBoldText text={item.Accounts[i] || ""} style={{ fontSize: 17, alignSelf: 'flex-start' }} />
                         </View>);
-                    }
+                    }}
                     const views = <View style={{ width: '90%', alignSelf: 'center', marginBottom: 16 }}>{items}</View>
 
                     return (
                         <View style={[styles.itemContainer, { backgroundColor: themeMain.gray }]}>
                             <View style={[styles.itemTopContainer, { backgroundColor: themeMain.gray }]}>
-                                <Image source={Images.test_bank_logo} style={{ width: 50, height: 50, alignSelf: 'center', marginStart: 16 }} />
-                                <BoldText text={item.BankName} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
-                                <View style={[styles.radio, { borderRadius: 4,backgroundColor: item.Status == "Active" ? '#DCFCE7' : item.Status == "Disconnected" ? '#FEE2E2' : item.Status == "Rejected" ? '#E6ECF2' : '#FEF3C7' }]} >
+                                <Image source={{ uri: item.FinancialInstitution.Logo }} style={{ width: 50, height: 50, alignSelf: 'center', marginStart: 16 }} />
+                                <BoldText text={item.FinancialInstitution.NameEn} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
+                                <View style={[styles.radio, { borderRadius: 4, backgroundColor: item.Status == "Active" ? '#DCFCE7' : item.Status == "Disconnected" ? '#FEE2E2' : item.Status == "Rejected" ? '#E6ECF2' : '#FEF3C7' }]} >
                                     <SemiBoldText text={item.Status} style={{ fontSize: 13, alignSelf: 'center', color: item.Status == "Active" ? '#16A34A' : item.Status == "Disconnected" ? '#DC2626' : item.Status == "Rejected" ? '#475569' : '#D97706' }} />
                                 </View>
                             </View>
@@ -129,7 +182,7 @@ const ConnectedAccountsScreen = () => {
                             <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', height: 1, marginVertical: 16, backgroundColor: '#E6E9EF' }} />
                             {views}
                             <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', height: 1, backgroundColor: '#E6E9EF' }} />
-                            <TouchableOpacity style={{ alignSelf: 'center', marginVertical: 23 }} onPress={() => { navigation.navigate('ManageAccount') }}>
+                            <TouchableOpacity style={{ alignSelf: 'center', marginVertical: 23 }} onPress={() => { navigation.navigate('ManageAccount',{account: item}) }}>
                                 <BoldText text={t("connectAccounts.manage")} style={{ fontSize: 17, color: themeMain.primaryColor }} />
                             </TouchableOpacity>
                         </View>
@@ -174,7 +227,7 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 50,
         marginHorizontal: 24,
-        fontSize:17,
+        fontSize: 17,
         position: 'absolute',
         bottom: Platform.OS === 'ios' ? 16 : 56
     },

@@ -44,8 +44,10 @@ const HomeScreen = () => {
         await RNSecureStorage.setItem("psuid", '255cc', {accessible: ACCESSIBLE.WHEN_UNLOCKED})
          getToken().then((res) => {
             console.log("res1",res)
+            
             getAllAccounts(1).then((res) => {
                 console.log("res1",res)
+                setAccounts([])
                 setAccounts(res.Data.AccountsLinks)
             }).catch((err) => {
                 console.log(err)
