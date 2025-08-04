@@ -21,11 +21,13 @@ type ThemeConfig = {
 };
 
 type CredentialsConfig = {
-  client_id:     string;
-  client_secret: string;
-  scope:         string;
-  uuidKey:       string;
-  apiKey:        string;
+  baseUrl:     string;
+  appName:     string;
+  token:       string;
+  scope:       string;
+  uuidKey:     string;
+  apiKey:      string;
+  logo:      string;
 };
 
 type ThemeContextType = {
@@ -55,11 +57,13 @@ const defaultTheme: ThemeConfig = {
 };
 
 const defaultCredentials: CredentialsConfig = {
-  client_id:'',
-  client_secret:'',
+  baseUrl:'',
+  appName:'',
+  token:'',
   scope:'',
   uuidKey:'',
   apiKey:'',
+  logo:''
 };
 
 // Create context with defaults

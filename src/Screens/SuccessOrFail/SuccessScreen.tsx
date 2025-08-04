@@ -49,7 +49,7 @@ const SuccessScreen = () => {
             
             <RegularText text={`${t('success.weHaveReceivedTheRequestInformation')}\n${t('success.fromYourSelectedAccounts')}`} style={{ fontSize: 13, marginTop: 4,textAlign:'center' }} />
 
-            <PrimaryButton text={t('done')} style={styles.button} onPress={() => {  }} />
+            <PrimaryButton text={t('done')} style={styles.button} onPress={() => {eventEmitter.emit('finish', "success")  }} />
 
             
         </View>

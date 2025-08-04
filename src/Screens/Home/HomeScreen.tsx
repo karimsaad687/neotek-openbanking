@@ -9,11 +9,13 @@ import PrimaryButton from "../../components/PrimaryButton";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import {getToken,getAllAccounts} from "../../common/apis";
+import { getAllAccounts, getInstitutions } from "../../common/apis";
 import RNSecureStorage, { ACCESSIBLE } from "rn-secure-storage";
 const HomeScreen = () => {
-    const { themeMain,credentials } = useContext(ThemeContext);
+    const { themeMain, credentials } = useContext(ThemeContext);
     const [selectedIndex, setSelectedIndex] = useState(-1)
+    const [page, setPage] = useState(1)
+    const [maxPage, setMaxPage] = useState(1)
     const [accounts, setAccounts] = useState([])
     const navigation = useNavigation();
 
@@ -25,55 +27,63 @@ const HomeScreen = () => {
         eventEmitter = new NativeEventEmitter()
     }
     const isFocus = useIsFocused();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         if (isFocus) {
             eventEmitter.emit('revoke', false)
             eventEmitter.emit('step', 1)
             eventEmitter.emit('title', t("details.connectYourAccount"))
-           apiCalls()
+
         }
     }, [isFocus])
 
-    const apiCalls=async()=>{
-        await RNSecureStorage.setItem("client_id", credentials.client_id, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
-        await RNSecureStorage.setItem("client_secret", credentials.client_secret, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
-        await RNSecureStorage.setItem("apiKey", credentials.apiKey, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
-        await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, {accessible: ACCESSIBLE.WHEN_UNLOCKED})
-        await RNSecureStorage.setItem("psuid", '255cc', {accessible: ACCESSIBLE.WHEN_UNLOCKED})
-         getToken().then((res) => {
-            console.log("res1",res)
-            
-            getAllAccounts(1).then((res) => {
-                console.log("res1",res)
-                setAccounts([])
-                setAccounts(res.Data.AccountsLinks)
-            }).catch((err) => {
-                console.log(err)
-            })
-         })
-       
+    useEffect(() => {
+        apiCalls()
+    }, [page])
+    const apiCalls = async () => {
+        await RNSecureStorage.setItem("url", credentials.baseUrl, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("token", credentials.token, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("appName", credentials.appName, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("logo", credentials.logo, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        // await getToken()
+        await getInstitutions(page).then((res) => {
+            console.log("res1", res)
+            setAccounts(prev => [...prev, ...res.Data.FinancialInstitution])
+            setMaxPage(res.Meta.TotalPages)
+        }).catch((err) => {
+            console.log(err)
+        })
+
     }
     return (
         <View style={{ backgroundColor: themeMain.white, flex: 1, }}>
 
 
-            <BoldText text={t("home.selectAccount")} style={{ fontSize: 21, marginTop: 53, marginStart: 24 }} />
-            <RegularText text={t("home.selectAccountDesc")} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
+            <BoldText text={t("home.selectAccount")} style={{ fontSize: 21, marginTop: 53, marginStart: 24, alignSelf: 'flex-start', height: 50 }} />
+            <RegularText text={t("home.selectAccountDesc")} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24, textAlign: 'left' }} />
 
             <FlatList
                 style={{ marginTop: 16, marginHorizontal: 24, marginBottom: Platform.OS === 'ios' ? 130 : 170 }}
                 data={accounts}
                 renderItem={({ item, index }) => (
+                    console.log("item", item),
                     <TouchableOpacity style={[styles.itemContainer, { backgroundColor: themeMain.gray }]}
                         onPress={() => setSelectedIndex(index)}>
-                        <Image source={{uri:item.FinancialInstitution.Logo}} style={{ width: 50, height: 50, alignSelf: 'center', marginStart: 16 }} />
-                        <BoldText text={item.FinancialInstitution.NameEn} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
+                        <Image source={{ uri: item.Logo }} style={{ width: 50, height: 50, alignSelf: 'center', marginStart: 16 }} />
+                        <BoldText text={i18n.language === 'en' ? item.FinancialInstitutionName.NameEn : item.FinancialInstitutionName.NameAr} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
                         <Image source={selectedIndex === index ? Images.radio_on : Images.radio_off} style={styles.radio} />
                     </TouchableOpacity>
-                )} />
-            <PrimaryButton text={t("continue")} style={styles.button} onPress={() => { navigation.navigate('Details',{account:accounts[selectedIndex]}) }} />
+                )}
+                onEndReached={() => {
+                    if (page < maxPage) {
+                        setPage(prev => prev + 1);
+                    }
+                }} />
+            <PrimaryButton text={t("continue")} style={styles.button} onPress={() => { navigation.navigate('Details', { account: accounts[selectedIndex] }) }} />
             {/* <PrimaryButton text={t("connectAccounts.accounts")} style={styles.accountsButton} onPress={() => { 
                 navigation.navigate('ConnectedAccounts')
              }} /> */}

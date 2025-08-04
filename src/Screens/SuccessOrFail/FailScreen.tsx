@@ -48,7 +48,7 @@ const FailScreen = () => {
 
             <RegularText text={`${t('fail.itSeemsThatTheSystemDoesNotTrustOr')}\n${t('fail.theActionIsUnauthorized')}`} style={{ fontSize: 13, marginTop: 4, textAlign: 'center' }} />
 
-            <PrimaryButton text={t('close')} style={styles.button} onPress={() => { }} />
+            <PrimaryButton text={t('close')} style={styles.button} onPress={() => {eventEmitter.emit('finish', "fail") }} />
 
 
         </View>

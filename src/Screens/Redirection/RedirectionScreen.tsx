@@ -7,16 +7,18 @@ import RegularText from "../../components/RegularText";
 import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
-import { createConsent, getAccount } from "../../common/apis";
+import { createConsent, getAccount, SpecialBankCodeState } from "../../common/apis";
 import moment from "moment";
 // import WebView from "react-native-webview";
 import NativeWebView from './NativeWebView';
+import WebView from "react-native-webview";
 const RedirectionScreen = () => {
   const { themeMain } = useContext(ThemeContext);
   const navigation = useNavigation();
   const route = useRoute()
   const { t } = useTranslation();
   const [url, setUrl] = useState("")
+  const [accountId, setAccountId] = useState("")
   const MyNativeModule = NativeModules.NeotekOpenbanking;
   let eventEmitter = null;
   if (Platform.OS === 'ios' && MyNativeModule) {
@@ -36,22 +38,40 @@ const RedirectionScreen = () => {
   //     navigation.navigate("Fail")
   // }, 3000)
   useEffect(() => {
-    createConsent(route.params.account.FinancialInstitution.FinancialInstitutionId, route.params.account.UserLoginId, moment().add(1, 'years').format()).then((res) => {
+    createConsent(route.params.account.FinancialInstitutionId, "RJHISARI_", moment().add(1, 'years').format()).then((res) => {
       console.log(res?.Data?.RedirectionURL)
       setUrl(res?.Data?.RedirectionURL)
       console.log(res?.Data?.AccountsLinkId)
+      setAccountId(res?.Data?.AccountsLinkId)
     })
   }, [])
 
+  const handleUrlChange = (event) => {
+    const { url } = event.nativeEvent;
+    // Handle the new URL
+    console.log('URL changed:', url);
+    console.log('found:', url.toString().includes("code") , url.toString().includes("state") , route.params.account.FinancialInstitutionId=="SAMAModelBank");
+    if(url.toString().includes("code") && url.toString().includes("state") && route.params.account.FinancialInstitutionId=="SAMAModelBank") {
+     const query = "code" + url.toString().split("code")[1]
+     console.log('query:', query);
+     SpecialBankCodeState(query).then((res) => {
+       console.log(res)
+     })
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (url) {
-        getAccount(1, route.params.account.AccountsLinkId).then((res) => {
+      if (url && accountId) {
+        console.log("url", url,route.params.account.FinancialInstitutionId)
+        getAccount(1, accountId).then((res) => {
           console.log(res?.Data?.AccountsLinks[0]?.Status)
           if (res?.Data?.AccountsLinks[0]?.Status === "Active") {
             navigation.navigate("Success")
+            setAccountId("")
           } else if (res?.Data?.AccountsLinks[0]?.Status === "Fail") {
             navigation.navigate("Fail")
+            setAccountId("")
           }
         })
       }
@@ -60,7 +80,7 @@ const RedirectionScreen = () => {
 
     // Cleanup interval when component unmounts
     return () => clearInterval(interval);
-  }, []);
+  }, [accountId]);
 
   return (
     <View style={{ flex: 1, backgroundColor: themeMain.white, alignItems: 'center' }}>
@@ -77,7 +97,7 @@ const RedirectionScreen = () => {
       {url && <NativeWebView style={{ width: '100%', height: '93%' }} url={url} onLoadEnd={() => {
         console.log('WebView finished loading');
         // Hide a loading spinner, trigger logic, etc.
-      }} />}
+      }} onUrlChange={handleUrlChange} />}
     </View>
   )
 }

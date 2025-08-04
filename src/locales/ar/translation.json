@@ -1,3 +1,102 @@
 {
-    "Select account":"Select account"
-}
+    "home": {
+      "selectAccount": "اختر الحساب",
+      "selectAccountDesc": "إذا كان حسابك مدعومًا، سنقوم بنقلك بأمان إلى تطبيق البنك الخاص بك للمصادقة على هذا الاتصال"
+    },
+    "details": {
+      "details": "تفاصيل",
+      "connectYourAccount": "ربط حسابك",
+      "connectYourAccountDesc": "لاستخدام هذه الخدمة، ستجمع إمكان البيانات المطلوبة من بنكك عبر خدمات نيودتك.",
+      "whyWeNeedToShareYourData": "لماذا نحتاج إلى مشاركة بياناتك؟",
+      "whatYouWillGetInReturn": "ماذا ستحصل في المقابل؟",
+      "yourAccountDetails": "تفاصيل حسابك",
+      "yourAccountNameAndNumber": "اسم حسابك ورقمه",
+      "yourAccountBalance": "رصيد حسابك",
+      "yourRegularPayments": "مدفوعاتك الدورية",
+      "yourIncomingTransactions": "المعاملات الواردة إلى حسابك",
+      "detailsYourIncomingTransactions": "تفاصيل المعاملات الواردة",
+      "yourOutgoingTransactions": "المعاملات الصادرة من حسابك",
+      "detailsYourOutgoingTransactions": "تفاصيل المعاملات الصادرة",
+      "yourAccountTransactions": "معاملات حسابك",
+      "directDebit": "الخصم المباشر",
+      "standingOrders": "الأوامر المستمرة",
+      "scheduledPayments": "المدفوعات المجدولة",
+      "contactAndParty": "تفاصيل الاتصال والأطراف",
+      "contactAndPartyDetails": "اسم الحساب والاسم القانوني الكامل لجميع الأطراف. ويمكن اختياريًا أيضًا أن يشمل عنوانهم أو عناوينهم، ورقم الهاتف. اسم الحساب، العنوان، تاريخ الميلاد، رقم الهوية الوطنية ورقم الإقامة. اسم الحساب واسمك القانوني الكامل. ويمكن اختياريًا أيضًا أن يشمل عنوانك، رقم هاتفك، وبريدك الإلكتروني.",
+      "sharingDataFrom": "مشاركة البيانات من",
+      "connectionExpires": "انتهاء صلاحية الاتصال",
+      "continueWithYourBank": "المتابعة مع بنكك",
+      "confirmYourRedirection": "تأكيد إعادة التوجيه",
+      "confirmYourRedirectionDesc": "بالنقر على السماح، سيتم إعادة توجيهك إلى بنكك لإكمال طلب الخدمة.",
+      "allowRedirection": "السماح بإعادة التوجيه",
+      "whatYouWillGetInReturnDesc": "من خلال مشاركة بياناتك، يمكننا تزويدك برؤية موحدة لحساباتك من مختلف البنوك في مكان واحد. سيُسهّل ذلك متابعتك للأرصدة، ورصد المعاملات، وإدارة التدفقات النقدية بكفاءة.",
+      "whhyWeNeedToShareYourDataDesc": "مشاركة بياناتك البنكية تساعدنا على تحليل مصروفات وإيرادات حسابك للوصول إلى رؤية شاملة لوضعك المالي، لذلك نطلب منك مشاركة بيانات الحساب البنكي عبر البنوك المفتوحة بأمان وفقًا لمعايير البنك المركزي السعودي."
+    },
+    "redirection": {
+      "title": "المصادقة",
+      "transferringYouTo": "نقوم بنقلك إلى",
+      "weAreSecurelyTransferringYouTo": "نحن ننقلك بأمان إلى"
+    },
+    "success": {
+      "title": "تم الاستلام بنجاح",
+      "weHaveReceivedTheRequestInformation": "لقد استلمنا طلب المعلومات",
+      "fromYourSelectedAccounts": "من حساباتك المحددة"
+    },
+    "fail": {
+      "title": "خطأ",
+      "somethingWentWrong": "حدث خطأ ما",
+      "itSeemsThatTheSystemDoesNotTrustOr": "يبدو أن النظام لا يثق أو",
+      "theActionIsUnauthorized": "الإجراء غير مصرح به"
+    },
+    "connectAccounts": {
+      "accounts": "الحسابات",
+      "title": "الحسابات المتصلة",
+      "connectAnotherAccount": "ربط حساب آخر",
+      "current": "الحالي",
+      "history": "السجل",
+      "no_accounts": "لا توجد حسابات",
+      "currentAccount": "الحساب الجاري",
+      "savedAccount": "الحساب المحفوظ",
+      "creditCardAccount": "حساب بطاقة الائتمان",
+      "prepaidCardAccount": "حساب البطاقة المدفوعة مسبقًا",
+      "manage": "إدارة",
+      "active": "نشط",
+      "disconnected": "مفصول",
+      "rejected": "مرفوض",
+      "expired": "منتهي الصلاحية",
+      "howWeAreUsingYourData": "كيف نستخدم بياناتك؟",
+      "howWeAreUsingYourDataDetails": "نقوم بمشاركة تفاصيل حسابك، المدفوعات الدورية، ومعاملات الحساب من حسابك المتصل بشركة نيودتك لتقديم خدمة إدارة مالية مؤسسية. سيستمر هذا حتى 01 يوليو 2023. ما زال بإمكانك الوصول إلى بيانات الحساب المالية من قسم البنك في لوحة التحكم.",
+      "theImpactToYourService": "تأثير ذلك على خدمتك",
+      "theImpactToYourServiceDetails": "أنت على وشك فصل هذا الحساب، لذلك لن نتمكن بعد الآن من الحصول على بيانات من بنك الراجحي.",
+      "whatThisMeans": "ماذا يعني هذا",
+      "dataWeGet": "البيانات التي نحصل عليها",
+      "dataWeGet1": "فصل حسابك سيؤثر على خدمة الإدارة المالية المؤسسية.",
+      "dataWeGet2": "ماذا سيحدث للبيانات الحالية؟ سيتم حذف أي بيانات سبق مشاركتها من قبلك بواسطة قيمة. للمزيد يرجى الاطلاع على رابط سياسة الخصوصية أدناه.",
+      "dataWeGet3": "يمكنك إضافة هذا الحساب مرة أخرى في أي وقت وستتعرف عليه خدمة الإدارة المالية المؤسسية وتقوم بتحديث البيانات.",
+      "clickHereForOur": "انقر هنا للاطلاع على",
+      "termsOfService": "شروط الخدمة"
+    },
+    "manageAccount": {
+      "title": "إدارة الحساب"
+    },
+    "disconnected": {
+      "disconnectedSuccessfully": "تم الفصل بنجاح",
+      "disconnectedLine1": "تم فصل الحساب ولم نعد قادرين على الحصول على البيانات من",
+      "disconnectedLine2": "فصل حسابك سيؤثر على خدمة الإدارة المالية المؤسسية.",
+      "disconnectedLine3": "ماذا سيحدث للبيانات الحالية؟ سيتم حذف أي بيانات سبق مشاركتها من قبلك بواسطة قيمة. للمزيد يرجى الاطلاع على رابط سياسة الخصوصية أدناه.",
+      "backToConnectedAccounts": "العودة إلى الحسابات المتصلة"
+    },
+    "thankYou": "شكرًا لك",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "continue": "متابعة",
+    "disconnect": "فصل",
+    "gotIt": "تم الفهم",
+    "done": "تم",
+    "confirm": "تأكيد",
+    "Active": "نشط",
+    "Disconnected": "مغلق",
+    "Rejected": "مرفوض",
+    "Expired": "منتهي الصلاحية"
+  }
+  

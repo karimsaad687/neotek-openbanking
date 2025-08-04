@@ -13,11 +13,13 @@ import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native"
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
 import moment from "moment";
+import RNSecureStorage from "rn-secure-storage";
 const DetailsScreen = () => {
     const { themeMain } = useContext(ThemeContext);
     const navigation = useNavigation();
     const route = useRoute()
     const [visible, setVisible] = useState(false);
+    const [logo,setLogo]=useState("")
     const [visibleWhyShare, setVisibleWhyShare] = useState(false);
     const [visibleWillGet, setVisibleWillGet] = useState(false);
     const [todayDate, setTodayDate] = useState(Date());
@@ -35,8 +37,15 @@ const DetailsScreen = () => {
         if (isFocus) {
             eventEmitter.emit('step', 1)
             eventEmitter.emit('title', t("details.connectYourAccount"))
+            getLogo()
         }
     }, [isFocus])
+
+    const getLogo = async () => {
+        let logo = await RNSecureStorage.getItem("logo")
+        console.log("logo",logo)
+        setLogo(logo)
+    }
     return (
         <SafeAreaView style={{ backgroundColor: themeMain.white, flex: 1 }}>
             <ScrollView style={{ flex: 1, }}>
@@ -44,15 +53,15 @@ const DetailsScreen = () => {
                 <View style={styles.imagesContainer}>
                     <View style={styles.imagesDashedLine} />
                     <View style={styles.imagesFrame} >
-                        <Image source={Images.ic_emkan_logo} style={{ width: 47, height: 14, alignSelf: 'center' }} />
+                        <Image source={{uri:logo}} style={{ width: 50, height: 50, alignSelf: 'center' }} />
                     </View>
                     <Image source={Images.ic_neotek} style={{ width: 50, height: 50, marginHorizontal: 32, alignSelf: 'center' }} />
                     <View style={styles.imagesFrame} >
-                        <Image source={{uri:account?.FinancialInstitution.Logo}} style={{ width: 47, height: 47, alignSelf: 'center' }} />
+                        <Image source={{uri:account?.Logo}} style={{ width: 47, height: 47, alignSelf: 'center' }} />
                     </View>
                 </View>
-                <BoldText text={t('details.connectYourAccount')} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
-                <RegularText text={t('details.connectYourAccountDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
+                <BoldText text={t('details.connectYourAccount')} style={{ fontSize: 21, marginTop: 40, marginStart: 24,alignSelf: 'flex-start' }} />
+                <RegularText text={t('details.connectYourAccountDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24,textAlign: 'left' }} />
                 <TitleDetails text={t('details.whyWeNeedToShareYourData')} onPress={() => { setVisibleWhyShare(true) }} />
                 <TitleDetails text={t('details.whatYouWillGetInReturn')} onPress={() => { setVisibleWillGet(true) }} />
 
@@ -70,7 +79,7 @@ const DetailsScreen = () => {
                 <View style={{ width: '90%', alignSelf: 'center',marginTop: 24, justifyContent: 'space-between', flexDirection: 'row' }}>
                     <View style={{ justifyContent: 'flex-start' }}>
                         <RegularText text={t('details.sharingDataFrom')} style={{ fontSize: 15 }} />
-                        <BoldText text={moment(todayDate).format('yyyy-MM-DD')} style={{ fontSize: 17 }} />
+                        <BoldText text={moment(todayDate).format('yyyy-MM-DD')} style={{ fontSize: 17,textAlign:'left' }} />
                     </View>
                     <View style={{ width: 1, height: 40, backgroundColor: '#E6E9EF' }} />
                     <View style={{ justifyContent: 'flex-end' }}>
@@ -92,8 +101,8 @@ const DetailsScreen = () => {
                 <View style={styles.modalContainer}>
                     <View style={[styles.container, { backgroundColor: themeMain.white }]}>
                         <Image source={Images.ic_popupbar} style={{ width: 40, height: 6, marginTop: 16, alignSelf: 'center' }} />
-                        <BoldText text={t('details.confirmYourRedirection')} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
-                        <RegularText text={t('details.confirmYourRedirectionDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
+                        <BoldText text={t('details.confirmYourRedirection')} style={{ fontSize: 21, marginTop: 40, marginStart: 24,alignSelf: 'flex-start' }} />
+                        <RegularText text={t('details.confirmYourRedirectionDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24,textAlign: 'left' }} />
 
                         <PrimaryButton text={t('details.allowRedirection')} style={styles.modalPrimary} onPress={() => { setVisible(false); navigation.navigate('Redirection',{'account':route.params.account}) }} />
                         <SecondaryButton text={t('cancel')} style={styles.modalSecondary} onPress={() => { setVisible(false) }} />
@@ -110,8 +119,8 @@ const DetailsScreen = () => {
                 <View style={styles.modalContainer}>
                     <View style={[styles.container, { backgroundColor: themeMain.white }]}>
                         <Image source={Images.ic_popupbar} style={{ width: 40, height: 6, marginTop: 16, alignSelf: 'center' }} />
-                        <BoldText text={(t('details.whatYouWillGetInReturn'))} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
-                        <RegularText text={(t('details.whatYouWillGetInReturnDesc'))} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
+                        <BoldText text={(t('details.whatYouWillGetInReturn'))} style={{ fontSize: 21, marginTop: 40, marginStart: 24,alignSelf: 'flex-start' }} />
+                        <RegularText text={(t('details.whatYouWillGetInReturnDesc'))} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24,textAlign: 'left' }} />
 
                         <PrimaryButton text={t("gotIt")} style={styles.modalSecondary} onPress={() => { setVisibleWillGet(false) }} />
                     </View>
@@ -128,8 +137,8 @@ const DetailsScreen = () => {
                 <View style={styles.modalContainer}>
                     <View style={[styles.container, { backgroundColor: themeMain.white }]}>
                         <Image source={Images.ic_popupbar} style={{ width: 40, height: 6, marginTop: 16, alignSelf: 'center' }} />
-                        <BoldText text={t('details.whyWeNeedToShareYourData')} style={{ fontSize: 21, marginTop: 40, marginStart: 24 }} />
-                        <RegularText text={t('details.whhyWeNeedToShareYourDataDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24 }} />
+                        <BoldText text={t('details.whyWeNeedToShareYourData')} style={{ fontSize: 21, marginTop: 40, marginStart: 24,alignSelf: 'flex-start' }} />
+                        <RegularText text={t('details.whhyWeNeedToShareYourDataDesc')} style={{ fontSize: 15, marginTop: 4, marginHorizontal: 24,textAlign: 'left' }} />
 
                         <PrimaryButton text={t("gotIt")} style={styles.modalSecondary} onPress={() => { setVisibleWhyShare(false) }} />
                     </View>

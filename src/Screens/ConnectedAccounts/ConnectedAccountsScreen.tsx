@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Image, StyleSheet, FlatList } from "react-native"
+import { View, TouchableOpacity, Image, StyleSheet, FlatList,ActivityIndicator } from "react-native"
 import { ThemeContext } from "../../common/ThemeContext";
 import { Images } from '../../assets';
 import { useContext, useEffect } from 'react';
@@ -11,10 +11,13 @@ import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import SemiBoldText from "../../components/SemiBoldText";
 import RNSecureStorage, { ACCESSIBLE } from "rn-secure-storage";
-import { getAllCurrentAccounts, getAllHistoryAccounts, getToken } from "../../common/apis";
+import { getAllCurrentAccounts, getAllHistoryAccounts } from "../../common/apis";
 const ConnectedAccountsScreen = () => {
     const { themeMain, credentials } = useContext(ThemeContext);
     const [selectedIndex, setSelectedIndex] = useState(1)
+    const [refreshing, setRefreshing] = useState(false)
+    
+    const [loading, setLoading] = useState(false)
     const navigation = useNavigation();
     const [currentAccounts, setCurrentAccounts] = useState([])
     const [historyAccounts, setHistoryAccounts] = useState([])
@@ -26,14 +29,8 @@ const ConnectedAccountsScreen = () => {
         eventEmitter = new NativeEventEmitter()
     }
     const isFocus = useIsFocused();
-    const { t } = useTranslation();
-    type Accounts = {
-        BankName: string,
-        Status: string,
-        Date: string,
-        Connection: string,
-        Accounts: string[]
-    }
+    const { t,i18n } = useTranslation();
+    
     useEffect(() => {
         if (isFocus) {
             eventEmitter.emit('revoke', true)
@@ -41,101 +38,59 @@ const ConnectedAccountsScreen = () => {
             currentAccountsCall()
         }
     }, [isFocus])
-    const current: Accounts[] = [{
-        BankName: "Alrajhi Bank",
-        Status: "Active",
-        Date: "12/12/2022",
-        Connection: "On going",
-        Accounts: ["Saving Account", "Current Account", "Credit Card Account", "Prepaid Card Account"]
-    },
-    {
-        BankName: "Anb Bank",
-        Status: "Disconnected",
-        Date: "12/12/2022",
-        Connection: "On going",
-        Accounts: ["Saving Account", "Current Account", "Credit Card Account"]
-    },
-    {
-        BankName: "SNB Bank",
-        Status: "Expired",
-        Date: "12/12/2022",
-        Connection: "On going",
-        Accounts: ["Saving Account", "Current Account"]
-    },
-    {
-        BankName: "Alinma Bank",
-        Status: "Rejected",
-        Date: "12/12/2022",
-        Connection: "On going",
-        Accounts: ["Saving Account", "Current Account", "Prepaid Card Account"]
-    }]
-
-    const history: Accounts[] = [
-        {
-            BankName: "Anb Bank",
-            Status: "Disconnected",
-            Date: "12/12/2022",
-            Connection: "On going",
-            Accounts: ["Saving Account", "Current Account", "Credit Card Account"]
-        }, {
-            BankName: "Alrajhi Bank",
-            Status: "Active",
-            Date: "12/12/2022",
-            Connection: "On going",
-            Accounts: ["Saving Account", "Current Account", "Credit Card Account", "Prepaid Card Account"]
-        },
-    ]
+    
 
 
     const currentAccountsCall = async () => {
-        if (currentAccounts.length == 0) {
-            await RNSecureStorage.setItem("client_id", credentials.client_id, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("client_secret", credentials.client_secret, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            getToken().then((res) => {
-                console.log("res1", res)
 
-                getAllCurrentAccounts(1).then((res) => {
-                    console.log("res1", res)
-                    setCurrentAccounts(res.Data.AccountsLinks)
-                }).catch((err) => {
-                    console.log(err)
-                })
-            })
-        }
+        await RNSecureStorage.setItem("url", credentials.baseUrl, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("token", credentials.token, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("appName", credentials.appName, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        setLoading(true)
+        getAllCurrentAccounts(1).then((res) => {
+            console.log("res1", res)
+            
+            setCurrentAccounts(res.Data.AccountsLinks)
+            
+        }).catch((err) => {
+            console.log(err)
+           
+        }).finally(() => {
+            setLoading(false)
+        })
+
     }
 
     const historyAccountsCall = async () => {
         console.log("length", historyAccounts.length)
-        if (historyAccounts.length == 0) {
-            await RNSecureStorage.setItem("client_id", credentials.client_id, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("client_secret", credentials.client_secret, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
-            getToken().then((res) => {
-                console.log("res1", res)
-
-                getAllHistoryAccounts(1).then((res) => {
-                    console.log("res1", res)
-                    setHistoryAccounts(res.Data.AccountsLinks)
-                }).catch((err) => {
-                    console.log(err)
-                })
-            })
-        }
+        setLoading(true)
+        await RNSecureStorage.setItem("url", credentials.baseUrl, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("token", credentials.token, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("appName", credentials.appName, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("apiKey", credentials.apiKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("uuidKey", credentials.uuidKey, { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        await RNSecureStorage.setItem("psuid", '255cc', { accessible: ACCESSIBLE.WHEN_UNLOCKED })
+        
+        getAllHistoryAccounts(1).then((res) => {    
+            setHistoryAccounts(res.Data.AccountsLinks)
+        }).catch((err) => {
+            console.log(err)
+            
+        }).finally(() => {
+            setLoading(false)
+        })
     }
-
     return (
         <View style={{ backgroundColor: themeMain.white, flex: 1, }}>
 
             <View style={[styles.currentHistoryContainer, { backgroundColor: themeMain.gray }]} >
-                <TouchableOpacity style={[styles.current, { backgroundColor: selectedIndex == 1 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(1); currentAccountsCall() }}>
+                <TouchableOpacity style={[styles.current, { backgroundColor: selectedIndex == 1 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(1); if (currentAccounts.length == 0) currentAccountsCall() }}>
                     <SemiBoldText text={t("connectAccounts.current")} style={{ color: selectedIndex == 1 ? themeMain.white : themeMain.textSecondaryColor, alignSelf: 'center' }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.history, { backgroundColor: selectedIndex == 2 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(2), historyAccountsCall() }}>
+                <TouchableOpacity style={[styles.history, { backgroundColor: selectedIndex == 2 ? themeMain.primaryColor : themeMain.gray }]} onPress={() => { setSelectedIndex(2); if (historyAccounts.length == 0) historyAccountsCall() }}>
                     <SemiBoldText text={t("connectAccounts.history")} style={{ color: selectedIndex == 2 ? themeMain.white : themeMain.textSecondaryColor, alignSelf: 'center' }} />
                 </TouchableOpacity>
             </View>
@@ -144,34 +99,47 @@ const ConnectedAccountsScreen = () => {
                 data={selectedIndex == 1 ? currentAccounts : historyAccounts}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
-                    <View style={{ flex: 1,justifyContent: 'center', alignItems: 'center',flexDirection: 'column',marginTop: 100 }}>
-                        <Image source={Images.ic_fail} style={{ width: 100, height: 100 }} />
-                        <BoldText text={t("connectAccounts.no_accounts")} style={{ color: themeMain.textSecondaryColor }} />
-                    </View>
+                    <>
+                        {!loading && <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: 100 }}>
+                            <Image source={Images.ic_fail} style={{ width: 100, height: 100 }} />
+                            <BoldText text={t("connectAccounts.no_accounts")} style={{ color: themeMain.textSecondaryColor }} />
+                        </View>}
+                    </>
+
                 }
+                refreshing={refreshing}
+                onRefresh={() => {
+                    setCurrentAccounts([])
+                    setHistoryAccounts([])
+                    selectedIndex == 1 ? currentAccountsCall() : historyAccountsCall();
+                    
+                }}
                 renderItem={({ item, index }) => {
                     const items = [];
-                    if(item.Accounts){for (let i = 0; i < item.Accounts.length; i++) {
-                        items.push(<View style={{ paddingVertical: 8, flexDirection: 'row' }}>
-                            <Image source={Images.ic_dot} style={{ width: 24, height: 24, alignSelf: 'flex-start' }} />
-                            <SemiBoldText text={item.Accounts[i] || ""} style={{ fontSize: 17, alignSelf: 'flex-start' }} />
-                        </View>);
-                    }}
+                    if (item.Accounts?.Account?.length > 0) {
+                        for (let i = 0; i < item.Accounts.Account.length; i++) {
+                            items.push(<View style={{ paddingVertical: 8, flexDirection: 'row' }}>
+                                <Image source={Images.ic_dot} style={{ width: 24, height: 24, alignSelf: 'flex-start' }} />
+                                <SemiBoldText text={item.Accounts.Account[i].Nickname || ""} style={{ fontSize: 17, alignSelf: 'flex-start' }} />
+                            </View>);
+                        }
+                    }
                     const views = <View style={{ width: '90%', alignSelf: 'center', marginBottom: 16 }}>{items}</View>
+                    const bankName =  i18n.language === 'en' ? item.FinancialInstitution.NameEn : item.FinancialInstitution.NameAr
 
                     return (
                         <View style={[styles.itemContainer, { backgroundColor: themeMain.gray }]}>
                             <View style={[styles.itemTopContainer, { backgroundColor: themeMain.gray }]}>
                                 <Image source={{ uri: item.FinancialInstitution.Logo }} style={{ width: 50, height: 50, alignSelf: 'center', marginStart: 16 }} />
-                                <BoldText text={item.FinancialInstitution.NameEn} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
-                                <View style={[styles.radio, { borderRadius: 4, backgroundColor: item.Status == "Active" ? '#DCFCE7' : item.Status == "Disconnected" ? '#FEE2E2' : item.Status == "Rejected" ? '#E6ECF2' : '#FEF3C7' }]} >
-                                    <SemiBoldText text={item.Status} style={{ fontSize: 13, alignSelf: 'center', color: item.Status == "Active" ? '#16A34A' : item.Status == "Disconnected" ? '#DC2626' : item.Status == "Rejected" ? '#475569' : '#D97706' }} />
+                                <BoldText text={bankName} style={{ fontSize: 17, alignSelf: 'center', marginStart: 8 }} />
+                                <View style={[styles.radio, { borderRadius: 4, backgroundColor: t(item.Status) == t("Active") ? '#DCFCE7' : t(item.Status) == t("Disconnected") ? '#FEE2E2' : t(item.Status) == t("Rejected") ? '#E6ECF2' : '#FEF3C7' }]} >
+                                    <SemiBoldText text={t(item.Status)} style={{ fontSize: 13, alignSelf: 'center', color: t(item.Status) == t("Active") ? '#16A34A' : t(item.Status) == t("Disconnected") ? '#DC2626' : t(item.Status) == t("Rejected") ? '#475569' : '#D97706' }} />
                                 </View>
                             </View>
                             <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', flexDirection: 'row' }}>
                                 <View style={{ justifyContent: 'flex-start' }}>
                                     <RegularText text={t('details.sharingDataFrom')} style={{ fontSize: 15 }} />
-                                    <BoldText text="2022-10-19" style={{ fontSize: 17 }} />
+                                    <BoldText text={item.CreationDateTime.split('T')[0]} style={{ fontSize: 17,textAlign:'left' }} />
                                 </View>
                                 <View style={{ width: 1, height: 40, backgroundColor: '#E6E9EF' }} />
                                 <View style={{ justifyContent: 'flex-end' }}>
@@ -181,10 +149,10 @@ const ConnectedAccountsScreen = () => {
                             </View>
                             <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', height: 1, marginVertical: 16, backgroundColor: '#E6E9EF' }} />
                             {views}
-                            <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', height: 1, backgroundColor: '#E6E9EF' }} />
-                            <TouchableOpacity style={{ alignSelf: 'center', marginVertical: 23 }} onPress={() => { navigation.navigate('ManageAccount',{account: item}) }}>
+                            {selectedIndex == 1 && <View style={{ width: '90%', alignSelf: 'center', justifyContent: 'space-between', height: 1, backgroundColor: '#E6E9EF' }} />}
+                            {selectedIndex == 1 && <TouchableOpacity style={{ alignSelf: 'center', marginVertical: 23 }} onPress={() => { navigation.navigate('ManageAccount', { account: item }) }}>
                                 <BoldText text={t("connectAccounts.manage")} style={{ fontSize: 17, color: themeMain.primaryColor }} />
-                            </TouchableOpacity>
+                            </TouchableOpacity>}
                         </View>
                     )
                 }} />
@@ -193,6 +161,11 @@ const ConnectedAccountsScreen = () => {
                 navigation.navigate('Home')
                 eventEmitter.emit('revoke', false)
             }} />
+            {loading && <View style={{ height: '100%', width: '100%', position: 'absolute',alignItems: 'center',justifyContent: 'center', top: 0,backgroundColor: 'rgba(0, 0, 0, 0.5)' }} >
+                <View style={{ backgroundColor: themeMain.white, width: 60,height: 60, borderRadius: 10,alignItems: 'center',justifyContent: 'center' }}>
+                    <ActivityIndicator size="large" color={themeMain.primaryColor} style={{ alignSelf: 'center', width: 40,height: 40}} />
+                </View>
+            </View>}
         </View>
     )
 }

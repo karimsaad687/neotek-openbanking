@@ -30,7 +30,7 @@ const ConsentPolicy = (prop: Props) => {
                 renderItem={({item,index})=>(
                     <View style={[styles.detailsItemsContainer,{paddingVertical:8}]}>
                         <Image source={Images.ic_dot} style={{width:24,height:24,alignSelf:'flex-start'}}/>
-                        <SemiBoldText text={item} style={{fontSize:17,alignSelf:'flex-start'}}/>
+                        <SemiBoldText text={item} style={{fontSize:17,alignSelf:'flex-start',textAlign:'left'}}/>
                     </View>
                 )}/>}
         </View>

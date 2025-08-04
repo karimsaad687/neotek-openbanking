@@ -1,17 +1,20 @@
 import { View, StyleSheet, Image } from "react-native"
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect,useState } from 'react';
 import { ThemeContext } from "../../common/ThemeContext";
 import { Images } from "../../assets";
 import BoldText from "../../components/BoldText";
 import RegularText from "../../components/RegularText";
 import PrimaryButton from "../../components/PrimaryButton";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import { useTranslation } from "react-i18next";
+import RNSecureStorage from "rn-secure-storage";
 const DisconnectedSuccessScreen = () => {
     const { themeMain } = useContext(ThemeContext);
-    const { t } = useTranslation();
+    const { t,i18n } = useTranslation();
+    const [appName, setAppName] = useState('')
     const navigation = useNavigation();
+    const route = useRoute();
     const MyNativeModule = NativeModules.NeotekOpenbanking;
       let eventEmitter = null;
       if (Platform.OS === 'ios' && MyNativeModule) {
@@ -24,9 +27,13 @@ const DisconnectedSuccessScreen = () => {
         if (isFocus) {
             eventEmitter.emit('step', 3)
             eventEmitter.emit('revokeTitle', "")
+            getAppName()
         }
     }, [isFocus])
-
+    const getAppName = async () => {
+      let name = await RNSecureStorage.getItem("appName")
+      setAppName(name)
+  }
     // useEffect(() => {
     //   const unsubscribe = navigation.addListener('beforeRemove', (e) => {
     //     // Prevent default behavior of leaving the screen
@@ -41,13 +48,15 @@ const DisconnectedSuccessScreen = () => {
   
     //   return unsubscribe;
     // }, [navigation]);
+  
+    const bankName =  i18n.language === 'en' ? route.params.account.FinancialInstitution.NameEn : route.params.account.FinancialInstitution.NameAr
     return (
         <View style={{ flex: 1 ,backgroundColor:themeMain.white,alignItems:'center'}}>
             <Image source={Images.ic_success} style={{ width: 199, height: 199,marginTop:32 }} />
             <BoldText text={t('disconnected.disconnectedSuccessfully')} style={{ fontSize: 21, marginTop: 16 }} />
-            <RegularText text={`${t('disconnected.disconnectedLine1')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
+            <RegularText text={`${t('disconnected.disconnectedLine1')+ bankName}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
             <RegularText text={`${t('disconnected.disconnectedLine2')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
-            <RegularText text={`${t('disconnected.disconnectedLine3')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'75%' }} />
+            <RegularText text={`${t('disconnected.disconnectedLine3',{appName:appName})}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'75%' }} />
 
             <PrimaryButton text={t('disconnected.backToConnectedAccounts')} style={styles.button} onPress={() => { navigation.goBack(); navigation.goBack(); }} />
 

@@ -26,11 +26,12 @@ export function multiply(a: number, b: number): number {
 
 type Props = {
   theme: NeotekTheme,
-  screen:string
+  screen:string,
+  finish:Function
 }
 
 
-export const NeoTek = ({ theme,screen }: Props) => {
+export const NeoTek = ({ theme,screen,finish }: Props) => {
   const Stack = createNativeStackNavigator();
   
   const [step, setStep] = useState(1)
@@ -60,6 +61,10 @@ export const NeoTek = ({ theme,screen }: Props) => {
 
   eventEmitter.addListener('title', data => {
     setHeaderTitle(data)
+  })
+
+  eventEmitter.addListener('finish', data => {
+    finish(data)
   })
   
   

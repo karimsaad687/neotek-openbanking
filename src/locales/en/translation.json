@@ -4,6 +4,7 @@
         "selectAccountDesc":"If support your account provide, we will transfer you securely, to your banking app to authenticate this connection"
     },
     "details":{
+        "details":"Details",
         "connectYourAccount":"Connect your account",
         "connectYourAccountDesc":"To use this service, Emkan will collect the required data from your bank through neotek services.",
         "whyWeNeedToShareYourData":"Why we need to share your data?",
@@ -74,11 +75,11 @@
         "howWeAreUsingYourData":"How we are using your data?",
         "howWeAreUsingYourDataDetails":"We are sharing your account details, regular payment, account transaction from your connected account neotek company in order to provide you with enterprise financial management service. This will continue until 01 July 2023.You can still access the account financial data from the bank section in the dashboard",
         "theImpactToYourService":"The impact to your service",
-        "theImpactToYourServiceDetails":"You are about to disconnect this account, so we will no longer be able to get data from Alrajhi bank",
+        "theImpactToYourServiceDetails":"You are about to disconnect this account, so we will no longer be able to get data from ",
         "whatThisMeans":"What this means",
         "dataWeGet":"Data we get",
         "dataWeGet1":"Discontenting your account will effect the enterprise financial management service.",
-        "dataWeGet2":"What will happen to the existing data? qaema will delete any data previously shared by you, for more details, please find the Privacy Policy link below",
+        "dataWeGet2":"What will happen to the existing data? {{appName}} will delete any data previously shared by you, for more details, please find the Privacy Policy link below",
         "dataWeGet3":"You can add this account again at any time and the enterprise financial management service will recognize it and update the data accordingly. ",
         "clickHereForOur":"Click here for our",
         "termsOfService":"Terms of Service"
@@ -88,9 +89,9 @@
     },
     "disconnected":{
         "disconnectedSuccessfully":"Disconnected Successfully",
-        "disconnectedLine1":"The account has been discounnected and we are no longer able to get data from Alrajhi Bank ",
+        "disconnectedLine1":"The account has been discounnected and we are no longer able to get data from ",
         "disconnectedLine2":"Discontenting your account will effect the enterprise financial management service.",
-        "disconnectedLine3":"What will happen to the existing data? qaema will delete any data previously shared by you, for more details, please find the Privacy Policy link below",
+        "disconnectedLine3":"What will happen to the existing data? {{appName}} will delete any data previously shared by you, for more details, please find the Privacy Policy link below",
         "backToConnectedAccounts":"Back to Connected Accounts"
     },
     "thankYou":"Thank you",
@@ -99,5 +100,10 @@
     "continue":"Continue",
     "disconnect":"Disconnect",
     "gotIt":"Got it",
-    "done":"Done"
+    "done":"Done",
+    "confirm":"Confirm",
+    "Active":"Active",
+    "Disconnected":"Disconnected",
+    "Rejected":"Rejected",
+    "Expired":"Expired"
 }
