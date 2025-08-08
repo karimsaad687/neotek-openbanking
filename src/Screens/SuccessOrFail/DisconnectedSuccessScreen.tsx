@@ -1,71 +1,124 @@
-import { View, StyleSheet, Image } from "react-native"
-import { useContext, useEffect,useState } from 'react';
-import { ThemeContext } from "../../common/ThemeContext";
-import { Images } from "../../assets";
-import BoldText from "../../components/BoldText";
-import RegularText from "../../components/RegularText";
-import PrimaryButton from "../../components/PrimaryButton";
-import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
+import { View, StyleSheet, Image } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { ThemeContext } from '../../common/ThemeContext';
+import { Images } from '../../assets';
+import BoldText from '../../components/BoldText';
+import RegularText from '../../components/RegularText';
+import PrimaryButton from '../../components/PrimaryButton';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../index';
+import type { AccountLink } from '../../common/types';
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
-import { useTranslation } from "react-i18next";
-import RNSecureStorage from "rn-secure-storage";
-const DisconnectedSuccessScreen = () => {
-    const { themeMain } = useContext(ThemeContext);
-    const { t,i18n } = useTranslation();
-    const [appName, setAppName] = useState('')
-    const navigation = useNavigation();
-    const route = useRoute();
-    const MyNativeModule = NativeModules.NeotekOpenbanking;
-      let eventEmitter = null;
-      if (Platform.OS === 'ios' && MyNativeModule) {
-        eventEmitter = new NativeEventEmitter(MyNativeModule);
-      } else {
-        eventEmitter = new NativeEventEmitter()
-      }
-    const isFocus = useIsFocused();
-    useEffect(() => {
-        if (isFocus) {
-            eventEmitter.emit('step', 3)
-            eventEmitter.emit('revokeTitle', "")
-            getAppName()
-        }
-    }, [isFocus])
-    const getAppName = async () => {
-      let name = await RNSecureStorage.getItem("appName")
-      setAppName(name)
+import { useTranslation } from 'react-i18next';
+import RNSecureStorage from 'rn-secure-storage';
+const DisconnectedSuccessScreen = ({ route, navigation }: NativeStackScreenProps<RootStackParamList, 'DisconnectedSuccess'>) => {
+  const { themeMain } = useContext(ThemeContext);
+  const { t, i18n } = useTranslation();
+  const [appName, setAppName] = useState('');
+  const account: AccountLink = route.params.account;
+  const MyNativeModule = NativeModules.NeotekOpenbanking;
+  let eventEmitter = null;
+  if (Platform.OS === 'ios' && MyNativeModule) {
+    eventEmitter = new NativeEventEmitter(MyNativeModule);
+  } else {
+    eventEmitter = new NativeEventEmitter();
   }
-    // useEffect(() => {
-    //   const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-    //     // Prevent default behavior of leaving the screen
-    //     e.preventDefault();
-  
-    //     // Optionally show a confirmation dialog
-    //     // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-    //     //   { text: 'Cancel', style: 'cancel', onPress: () => {} },
-    //     //   { text: 'Yes', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
-    //     // ]);
-    //   });
-  
-    //   return unsubscribe;
-    // }, [navigation]);
-  
-    const bankName =  i18n.language === 'en' ? route.params.account.FinancialInstitution.NameEn : route.params.account.FinancialInstitution.NameAr
-    return (
-        <View style={{ flex: 1 ,backgroundColor:themeMain.white,alignItems:'center'}}>
-            <Image source={Images.ic_success} style={{ width: 199, height: 199,marginTop:32 }} />
-            <BoldText text={t('disconnected.disconnectedSuccessfully')} style={{ fontSize: 21, marginTop: 16 }} />
-            <RegularText text={`${t('disconnected.disconnectedLine1')+ bankName}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
-            <RegularText text={`${t('disconnected.disconnectedLine2')}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'70%' }} />
-            <RegularText text={`${t('disconnected.disconnectedLine3',{appName:appName})}`} style={{ fontSize: 13, marginTop: 12,textAlign:'center',width:'75%' }} />
+  const isFocus = navigation.isFocused();
+  useEffect(() => {
+    if (isFocus) {
+      eventEmitter.emit('step', 3);
+      eventEmitter.emit('revokeTitle', '');
+      getAppName();
+    }
+  }, [isFocus ]);
+  const getAppName = async () => {
+    let name = await RNSecureStorage.getItem('appName');
+    setAppName(name || '');
+  };
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+  //     // Prevent default behavior of leaving the screen
+  //     e.preventDefault();
 
-            <PrimaryButton text={t('disconnected.backToConnectedAccounts')} style={styles.button} onPress={() => { navigation.goBack(); navigation.goBack(); }} />
+  //     // Optionally show a confirmation dialog
+  //     // Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+  //     //   { text: 'Cancel', style: 'cancel', onPress: () => {} },
+  //     //   { text: 'Yes', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
+  //     // ]);
+  //   });
 
-            
-        </View>
-    )
-}
+  //   return unsubscribe;
+  // }, [navigation]);
 
-export default DisconnectedSuccessScreen
+  const bankName =
+    i18n.language === 'en'
+      ? account.FinancialInstitution.NameEn
+      : account.FinancialInstitution.NameAr;
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: themeMain.white,
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        source={Images.ic_success}
+        style={{ width: 199, height: 199, marginTop: 32 }}
+      />
+      <BoldText
+        text={t('disconnected.disconnectedSuccessfully')}
+        style={{ fontSize: 21, marginTop: 16 }}
+      />
+      <RegularText
+        text={`${t('disconnected.disconnectedLine1') + bankName}`}
+        style={{
+          fontSize: 13,
+          marginTop: 12,
+          textAlign: 'center',
+          width: '70%',
+        }}
+      />
+      <RegularText
+        text={`${t('disconnected.disconnectedLine2')}`}
+        style={{
+          fontSize: 13,
+          marginTop: 12,
+          textAlign: 'center',
+          width: '70%',
+        }}
+      />
+      <RegularText
+        text={`${t('disconnected.disconnectedLine3', { appName: appName })}`}
+        style={{
+          fontSize: 13,
+          marginTop: 12,
+          textAlign: 'center',
+          width: '75%',
+        }}
+      />
+
+      <PrimaryButton
+        text={t('disconnected.backToConnectedAccounts')}
+        style={styles.button}
+        onPress={() => {
+          navigation.goBack();
+          navigation.goBack();
+        }}
+      />
+    </View>
+  );
+};
+
+export default DisconnectedSuccessScreen;
 const styles = StyleSheet.create({
-    button: { width: '90%', height: 50, marginHorizontal: 24, marginTop: 16, alignSelf: 'center', bottom: 70, position: 'absolute' }
-})
+  button: {
+    width: '90%',
+    height: 50,
+    marginHorizontal: 24,
+    marginTop: 16,
+    alignSelf: 'center',
+    bottom: 70,
+    position: 'absolute',
+  },
+});

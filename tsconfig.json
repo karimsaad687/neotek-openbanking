@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "noEmitOnError": false,
+    "outDir": "dist",
     "rootDir": ".",
     "paths": {
       "neotek-openbanking": ["./src/index"]
